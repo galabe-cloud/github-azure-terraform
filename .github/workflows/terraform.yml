@@ -10,6 +10,11 @@ env:
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  credentials: ${{ toJson({
+    "clientId":env.ARM_CLIENT_ID,
+    "clientSecret":env.ARM_CLIENT_SECRET,
+    "subscriptionId":env.ARM_SUBSCRIPTION_ID,
+    "tenantId":env.ARM_TENANT_ID }) }}
 
 jobs:
   terraform:
@@ -24,7 +29,7 @@ jobs:
     - name: Login to Azure
       uses: azure/login@v1
       with:
-        creds: '${{ toJson(credentials) }}'
+        creds: '${{ toJson(env.credentials) }}'
     - name: Terraform Init
       run: terraform init
       working-directory: ./terraform
@@ -37,3 +42,4 @@ jobs:
     - name: Terraform Apply
       run: terraform apply --auto-approve
       working-directory: ./terraform
+
